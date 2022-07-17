@@ -1,0 +1,53 @@
+.trouble {
+    margin-left: 15%;
+}
+
+.error_div {
+    color: red;
+    margin-bottom: 3px !important;
+}
+
+fw-input {
+    width: 30% !important;
+}
+
+#typeSelectDiv fw-select {
+    width: 50% !important;
+    margin-bottom: 2%;
+}
+
+#selectError {
+    margin-top: 1.5%;
+}
+
+.red {
+    color: red;
+}
+
+.align {
+    margin-left: 5px;
+    margin-top: 9px;
+}
+
+.map-container {
+    display: flex;
+    margin-bottom: 2em;
+    margin-top: 2%;
+}
+
+.labelNps2 {
+    flex: 0.4;
+    margin-right: 20px;
+}
+
+.mt-2 {
+    margin-top: 2%;
+}
+
+.feilds fw-select {
+    width: 100% !important;
+}
+
+label {
+    font-weight: 600;
+}

@@ -1,0 +1,142 @@
+<html>
+
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://static.freshdev.io/fdk/2.0/assets/fresh_client.js"></script>
+    <script type="module" src="https://unpkg.com/@freshworks/crayons@v3/dist/crayons/crayons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/@freshworks/crayons@v3/dist/crayons/crayons.js"></script>
+    <script src="./assets/iparams.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://static.freshdev.io/fdk/2.0/assets/freshdesk.css">
+    <link rel="stylesheet" href="./assets/iparams.css">
+
+</head>
+
+<body>
+    <div class="authentication align">
+        <fw-input label="Freshdesk Domain" id="domain" required clear-input>
+        </fw-input>
+        <fw-input label="Freshdesk API key" id="apiKey" required clear-input>
+        </fw-input>
+        <span class="trouble"> <a
+                href="https://support.freshdesk.com/support/solutions/articles/215517-how-to-find-your-api-key"
+                target="_blank">Trouble
+                finding
+                API
+                key?</a></span>
+        <div class="error_div"></div>
+        <div>
+            <fw-button color="primary" id="authBtn"> Authenticate</fw-button>
+        </div>
+    </div>
+    <div class="NPS2_authentication align">
+        <fw-input label="NPS2 Username" id="username" required clear-input>
+        </fw-input>
+        <fw-input label="NPS2 Password" id="password" required clear-input>
+        </fw-input>
+        <div class="error_div_nps2"></div>
+        <div class="mt-2">
+            <fw-button color="primary" id="authBtn_NPS2"> Authenticate</fw-button>
+        </div>
+    </div>
+    <div class="next_page align">
+        <div id="typeSelectDiv"></div>
+        <label class="fw-type-bold">Map freshdesk ticket field to NPS2 field<span class="red"> *</span></label>
+        <div class="map-container">
+            <div class='labelNps2'>Part_Type</div>
+            <div class="fields">
+                <fw-select placeholder="Your choices" id="pt" class="fd_fields" />
+            </div>
+        </div>
+        <div class="map-container">
+            <div class='labelNps2'>Supplier</div>
+            <div class="fields">
+                <fw-select placeholder="Your choices" id="sup" class="fd_fields" />
+            </div>
+        </div>
+        <div class="map-container">
+            <div class='labelNps2'>Aging_Code</div>
+            <div class="fields">
+                <fw-select placeholder="Your choices" id="ac" class="fd_fields" />
+            </div>
+        </div>
+        <div class="map-container">
+            <div class='labelNps2'>Function_Code</div>
+            <div class="fields">
+                <fw-select placeholder="Your choices" id="fc" class="fd_fields" />
+            </div>
+        </div>
+        <div class="map-container">
+            <div class='labelNps2'>Purchase_Order_Type</div>
+            <div class="fields">
+                <fw-select placeholder="Your choices" id="pot" class="fd_fields">
+                </fw-select>
+            </div>
+        </div>
+        <div class="map-container">
+            <div class='labelNps2'>Flag_MPCD</div>
+            <div class="fields">
+                <fw-select placeholder="Your choices" id="fmpcd" class="fd_fields">
+                </fw-select>
+            </div>
+        </div>
+        <div class="map-container">
+            <div class='labelNps2'>Flag_Active_Part</div>
+            <div class="fields">
+                <fw-select placeholder="Your choices" id="fap" class="fd_fields">
+                </fw-select>
+            </div>
+        </div>
+        <div id="selectError" class="red">
+        </div>
+    </div>
+    <script type="text/javascript">
+        var updateConfigs;
+        let optionArray = [];
+        function postConfigs() {
+            var domain = $("#domain").val();
+            var api_key = $("#apiKey").val();
+            var customerID = $("#customerID").val();
+            var cargo_url = $("#cargo_url").val();
+            var cargoApiKey = $("#cargoApiKey").val();
+            return {
+                __meta: {
+                    secure: ["api_key"]
+                },
+                domain: domain,
+                api_key: api_key,
+                customerID: customerID, cargo_url: cargo_url, cargoApiKey: cargoApiKey
+            };
+        }
+
+        function getConfigs(configs) {
+            updateConfigs = configs;
+            $("#domain").val(configs.domain);
+            $("#apiKey").val(configs.api_key);
+            $("#cargo_url").val(configs.cargo_url);
+            $("#cargoApiKey").val(configs.cargoApiKey);
+        }
+        function validate() {
+            var btnText = $("#authBtn").text();
+            if ($(".authentication").is(":visible") && btnText !== "Authenticated") {
+                $(".error_div").html("Please click Authenticate button for further installation").fadeOut(5000);
+                return false;
+            }
+            else if ($(".next_page").is(":visible")) {
+                if ($("#customerID").val() === null || $("#customerID").val() === "--Select--" || $("#customerID").val() === undefined ||
+                    $("#cargo_url").val() === null || $("#cargo_url").val() === "" || $("#cargo_url").val() === undefined ||
+                    $("#cargoApiKey").val() === null || $("#cargoApiKey").val() === "" || $("#cargoApiKey").val() === undefined
+                ) {
+                    console.log("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO")
+                    $("#selectError").text("Please choose field for all mandatory fields");
+                    return false;
+                } else {
+                    console.log("EEEEEEEEEEEEEEEEEEEEeeeeeeeeeeeeeee");
+                    $("#selectError").text("");
+                }
+            }
+            return true;
+        }
+    </script>
+</body>
+
+</html>
