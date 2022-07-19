@@ -21,9 +21,7 @@ app.initialized().then(function (client) {
         removeAttrFn("password");
     });
     $('.fd_fields').on('fwChange', function () {
-        console.log($(this).val())
         let optionArray1 = optionArray.filter(v => v.value !== $(this).val());
-        console.log(optionArray1)
         setOption(optionArray1);
     });
 });
@@ -38,7 +36,6 @@ let NSP2BtnClick = function () {
     ($("#username").val().trim() !== "" && $("#password").val().trim() !== "") ? Nps2VadalitionCheck() : buttonEnable('authBtn_NPS2');
 }
 let Nps2VadalitionCheck = function () {
-    console.log("*********************")
     $("#authBtn_NPS2").text("Authenticated");
     $(".NPS2_authentication").hide();
     $(".next_page").show();
@@ -76,7 +73,6 @@ function to(promise, improved) {
     return promise
         .then((data) => [null, data])
         .catch((err) => {
-            console.log(err)
             if (improved) {
                 Object.assign(err, improved);
             }
@@ -86,15 +82,12 @@ function to(promise, improved) {
 async function getTicketFileds(origin) {
     let ticketsResp = await getFDFileds();
     if (ticketsResp && ticketsResp.length) {
-        console.log(ticketsResp)
         if (origin == 'fd') {
             $("#authBtn").text("Authenticated");
             $(".authentication").hide();
             $(".NPS2_authentication").show();
         } else {
             const found_names = ticketsResp.filter(v => v.name === "ticket_type");
-            console.log(found_names)
-            console.log(found_names[0].choices)
             let select = `<fw-select label="Ticket Type" placeholder="Freshdesk ticket type(s)" id="type" multiple required>`;
             $.each(found_names[0].choices, function (k, v) {
                 select +=
@@ -109,7 +102,6 @@ async function getTicketFileds(origin) {
                     optionArray.push(obj)
                 }
             });
-            console.log(optionArray)
             setOption(optionArray);
             // =================================
             select = `${select}</fw-select>`;
