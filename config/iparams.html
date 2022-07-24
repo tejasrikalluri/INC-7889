@@ -40,49 +40,49 @@
     </div>
     <div class="next_page align">
         <div id="typeSelectDiv"></div>
-        <label class="fw-type-bold">Map freshdesk ticket field to NPS2 field<span class="red"> *</span></label>
+        <label class="fw-type-bold">Map freshdesk ticket field to NPS2 field</label>
         <div class="map-container">
-            <div class='labelNps2'>Part_Type</div>
+            <div class='labelNps2'>Part_Type<span class="red"> *</span></div>
             <div class="fields">
-                <fw-select placeholder="Your choices" id="pt" class="fd_fields" />
+                <fw-select placeholder="Your choices" id="Part_Type" class="fd_fields" />
             </div>
         </div>
         <div class="map-container">
-            <div class='labelNps2'>Supplier</div>
+            <div class='labelNps2'>Supplier<span class="red"> *</span></div>
             <div class="fields">
-                <fw-select placeholder="Your choices" id="sup" class="fd_fields" />
+                <fw-select placeholder="Your choices" id="Supplier" class="fd_fields" />
             </div>
         </div>
         <div class="map-container">
-            <div class='labelNps2'>Aging_Code</div>
+            <div class='labelNps2'>Aging_Code<span class="red"> *</span></div>
             <div class="fields">
-                <fw-select placeholder="Your choices" id="ac" class="fd_fields" />
+                <fw-select placeholder="Your choices" id="Aging_Code" class="fd_fields" />
             </div>
         </div>
         <div class="map-container">
-            <div class='labelNps2'>Function_Code</div>
+            <div class='labelNps2'>Function_Code<span class="red"> *</span></div>
             <div class="fields">
-                <fw-select placeholder="Your choices" id="fc" class="fd_fields" />
+                <fw-select placeholder="Your choices" id="Function_Code" class="fd_fields" />
             </div>
         </div>
         <div class="map-container">
-            <div class='labelNps2'>Purchase_Order_Type</div>
+            <div class='labelNps2'>Purchase_Order_Type<span class="red"> *</span></div>
             <div class="fields">
-                <fw-select placeholder="Your choices" id="pot" class="fd_fields">
+                <fw-select placeholder="Your choices" id="Purchase_Order_Type" class="fd_fields">
                 </fw-select>
             </div>
         </div>
         <div class="map-container">
-            <div class='labelNps2'>Flag_MPCD</div>
+            <div class='labelNps2'>Flag_MPCD<span class="red"> *</span></div>
             <div class="fields">
-                <fw-select placeholder="Your choices" id="fmpcd" class="fd_fields">
+                <fw-select placeholder="Your choices" id="Flag_MPCD" class="fd_fields">
                 </fw-select>
             </div>
         </div>
         <div class="map-container">
-            <div class='labelNps2'>Flag_Active_Part</div>
+            <div class='labelNps2'>Flag_Active_Part<span class="red"> *</span></div>
             <div class="fields">
-                <fw-select placeholder="Your choices" id="fap" class="fd_fields">
+                <fw-select placeholder="Your choices" id="Flag_Active_Part" class="fd_fields">
                 </fw-select>
             </div>
         </div>
@@ -91,19 +91,16 @@
     </div>
     <script type="text/javascript">
         var updateConfigs;
-        let optionArray = [];
+        let optionArray = [], array = {};
         function postConfigs() {
             var domain = $("#domain").val();
             var api_key = $("#apiKey").val();
             var username = $("#username").val();
             var password = $("#username").val();
             var types = $("#type").val();
-            let array = [];
-            $.each($('.labelNps2'), function (k, v) {
-                let obj = {}
+            /* $.each($('.labelNps2'), function (k, v) {
                 obj[$(v).text()] = $($(v).next().find('.fd_fields')).val();
-                array.push(obj)
-            });
+            }); */
             return {
                 __meta: {
                     secure: ["api_key"]
@@ -123,11 +120,12 @@
         function validate() {
             let types = $("#type").val();
             var btnText = $("#authBtn").text();
+            let isAllow = true;
             if ($(".authentication").is(":visible") && btnText !== "Authenticated") {
-                $(".error_div").html("Please click Authenticate button for further installation").fadeOut(5000);
-                return false;
+                $(".error_div").html("Please click Authenticate button for further installation");
+                isAllow = false;
             }
-            else if ($(".next_page").is(":visible") && types.length) {
+            if ($(".next_page").is(":visible") && types.length) {
                 let array = [];
                 $.each($('.labelNps2'), function (k, v) {
                     let obj = {}
@@ -135,10 +133,16 @@
                     array.push(obj)
                 });
                 $.each(array, function (k1, v) {
-                    console.log(Object.keys(v).every((k) => v[k]))
+                    console.log(!Object.keys(v).every((k) => v[k]), Object.keys(v).every((k) => v[k]))
+                    if (!Object.keys(v).every((k) => v[k])) {
+                        console.log("*************")
+                        $("#selectError").html("Please select all mandatory fields");
+                        return isAllow = false;
+                    }
                 });
-            }
-            return true;
+            } else { $("#selectError").html("Please select all mandatory fields"); isAllow = false };
+            console.log(isAllow)
+            return isAllow;
         }
     </script>
 </body>

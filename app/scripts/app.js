@@ -8,11 +8,17 @@ async function init() {
 }
 
 async function renderText() {
-  const textElement = document.getElementById('apptext');
-  const contactData = await client.data.get('contact');
-  const {
-    contact: { name }
-  } = contactData;
-
-  textElement.innerHTML = `Ticket is created by ${name}`;
+  const iparamData = await client.iparams.get();
+  console.log(iparamData)
+  const { types } = iparamData;
+  console.log("**************************************")
+  console.log(types)
+  client.events.on("ticket.propertiesUpdated", eventCallback, { intercept: true });
 }
+let eventCallback = function (event) {
+  console.log(event.type + " event occurred");
+  var event_data = event.helper.getData();
+  console.log(event_data)
+  event.helper.done()
+  event.helper.fail('errorMessage')
+};

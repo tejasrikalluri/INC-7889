@@ -11,20 +11,17 @@ app.initialized().then(function (client) {
         ($("#apiKey").val().trim() !== "" && $("#domain").val().trim() !== "") ? getTicketFileds('fd') : buttonEnable('authBtn');
     });
     $(document).on('click', '#authBtn_NPS2', NSP2BtnClick);
-    $(document).on('change', '#customerID', function () {
-        $("#selectError").html("");
-    });
     $(document).on('fwFocus', '#domain,#apiKey,#username,#password', function () {
         removeAttrFn("domain");
         removeAttrFn("apiKey");
         removeAttrFn("username");
         removeAttrFn("password");
     });
-    $('.fd_fields').on('fwChange', function () {
-        let optionArray1 = optionArray.filter(v => v.value !== $(this).val());
-        setOption(optionArray1);
+    $('.fd_fields,#type').on('fwChange', function () { 
+        $("#selectError").html("");
     });
 });
+
 let NSP2BtnClick = function () {
     $(this).text("Authenticating...");
     $(this).prop("disabled", true);
@@ -106,29 +103,55 @@ async function getTicketFileds(origin) {
             // =================================
             select = `${select}</fw-select>`;
             $('#typeSelectDiv').append(select);
-            if (updateConfigs !== undefined) {
-                $("#customerID").val(updateConfigs.customerID);
+            getOptionInfo('Part_Type');
+            getOptionInfo('Supplier');
+            getOptionInfo('Aging_Code');
+            getOptionInfo('Function_Code');
+            getOptionInfo('Flag_Active_Part');
+            getOptionInfo('Purchase_Order_Type');
+            getOptionInfo('Flag_MPCD');
+            if (updateConfigs) {
+                var typeSelect = document.getElementById('type');
+                typeSelect.value = updateConfigs.types;
             }
         }
     } else {
         $('.error_div').html("Something went wrong please try again later");
     }
 }
+let getOptionInfo = function (id) {
+    var methodOptionSelect = document.getElementById(id);
+    methodOptionSelect.addEventListener('fwChange', (e) => {
+        array[id] = [e.detail.meta.selectedOptions[0].text, e.detail.meta.selectedOptions[0].value]
+    });
+}
 let setOption = function (optionArray) {
-    var methodOptionSelect = document.getElementById('fap');
-    methodOptionSelect.options = optionArray;
-    var methodOptionSelect = document.getElementById('sup');
-    methodOptionSelect.options = optionArray;
-    var methodOptionSelect = document.getElementById('pt');
-    methodOptionSelect.options = optionArray;
-    var methodOptionSelect = document.getElementById('ac');
-    methodOptionSelect.options = optionArray;
-    var methodOptionSelect = document.getElementById('fc');
-    methodOptionSelect.options = optionArray;
-    var methodOptionSelect = document.getElementById('pot');
-    methodOptionSelect.options = optionArray;
-    var methodOptionSelect = document.getElementById('fmpcd');
-    methodOptionSelect.options = optionArray;
+    var Flag_Active_Part = document.getElementById('Flag_Active_Part');
+    Flag_Active_Part.options = optionArray;
+    var Supplier = document.getElementById('Supplier');
+    Supplier.options = optionArray;
+    var Part_Type = document.getElementById('Part_Type');
+    Part_Type.options = optionArray;
+    var Aging_Code = document.getElementById('Aging_Code');
+    Aging_Code.options = optionArray;
+    var Function_Code = document.getElementById('Function_Code');
+    Function_Code.options = optionArray;
+    var Purchase_Order_Type = document.getElementById('Purchase_Order_Type');
+    Purchase_Order_Type.options = optionArray;
+    var Flag_MPCD = document.getElementById('Flag_MPCD');
+    Flag_MPCD.options = optionArray;
+    if (updateConfigs) {
+        for (let fields in updateConfigs.array) {
+            var field = document.getElementById(fields);
+            field.setSelectedOptions([
+                {
+                    value: updateConfigs.array[fields][1],
+                    text: updateConfigs.array[fields][0],
+                    graphicsProps: { name: 'ecommerce' }
+                }
+            ])
+        }
+    }
 }
 function buttonEnable(id) {
     $("#" + id).text("Authenticate");
