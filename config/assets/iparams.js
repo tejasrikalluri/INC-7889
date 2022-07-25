@@ -88,7 +88,7 @@ async function getTicketFileds(origin) {
             let select = `<fw-select label="Ticket Type" placeholder="Freshdesk ticket type(s)" id="type" multiple required>`;
             $.each(found_names[0].choices, function (k, v) {
                 select +=
-                    `<fw-select-option  value="${k}">${v}</fw-select-option >")`;
+                    `<fw-select-option  value="${v}">${v}</fw-select-option >")`;
             });
             $.each(ticketsResp, function (k, v) {
                 if (!v.default && v.type === 'custom_text') {
