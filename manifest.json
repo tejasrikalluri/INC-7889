@@ -10,7 +10,8 @@
     }
   },
   "whitelisted-domains": [
-    "https://<%= iparam.domain %>"
+    "https://<%= iparam.domain %>",
+    "https://api.eu-de.apiconnect.ibmcloud.com"
   ],
   "engines": {
     "node": "14.17.3",
