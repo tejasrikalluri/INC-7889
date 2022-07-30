@@ -21,70 +21,33 @@ async function renderText() {
     console.log("Update properies happened")
     const ticketData = await client.data.get('ticket');
     const { ticket: { custom_fields: { cf_customer } } } = ticketData;
-    const { ticket: { custom_fields, id } } = ticketData;
+    const { ticket: { id } } = ticketData;
     console.log(cf_customer, initial, typeMatch)
-    if (cf_customer !== initial && typeMatch > -1) {
-      fetchNPS2Fields(custom_fields, cf_customer, array, id);
+    if (cf_customer !== initial && cf_customer && typeMatch > -1) {
+      fetchNPS2Fields(cf_customer, array, id);
     }
     event.helper.done();
     event.helper.fail('errorMessage');
   };
   client.events.on("ticket.propertiesUpdated", eventCallback);
 }
-let fetchNPS2Fields = async function (custom_fields, cf_customer, array, id) {
+let fetchNPS2Fields = async function (cf_customer, array, id) {
   var headers = {
-    "Authorization": "Basic <%= iparam.username %>:<%= iparam.password %>",
-    'X-IBM-Client-Id': 'd1707a23-b9d2-4f9a-8fbc-cf103d354f83',
-    'X-IBM-Client-Secret': 'eC8vY0pA5dP6hD7sM1cV6pE7yT5uI7cG3jI1fD5gO8pB0sB2dK',
-    'accept': 'application/json',
-    'HondaHeaderType.CollectedTimeStamp': '2008-03-27T15:43:23.12Z',
+    'X-IBM-Client-Id': '<%= iparam.clientId %>',
+    'X-IBM-Client-Secret': '<%= iparam.clientSecret %>',
     'HondaHeaderType.SiteId': 'FreshDesk',
     'HondaHeaderType.BusinessId': 'Part',
-    'HondaHeaderType.MessageId': 'Part'
   };
   var options = { headers: headers };
-  [err, response] = await to(client.request.get(`https://api.eu-de.apiconnect.ibmcloud.com/honda-motor-europe/dev/v100/freshdesk/part/${cf_customer}`, options));
-  // console.log(response);
-  let resp = {
-    "properties": {
-      "Part_Number": {
-        "type": "string",
-        "description": "Part Number - edited & capitals",
-        "example": "15400-RBA-F01"
-      },
-      "Part_Type": {
-        "type": "string",
-        "example": "A/B/C/T/..."
-      },
-      "Supplier": {
-        "type": "string",
-        "example": "1L002"
-      },
-      "Aging_Code": {
-        "type": "string",
-        "example": "2"
-      },
-      "Function_Code": {
-        "type": "string",
-        "example": "15400"
-      },
-      "Purchase_Order_Type": {
-        "type": "string",
-        "example": "B"
-      },
-      "Flag_MPCD": {
-        "type": "string",
-        "example": "YES/NO"
-      },
-      "Flag_Active_Part": {
-        "type": "string",
-        "example": "A/I",
-        "description": "Active / Inactive"
-      }
-    }
-  };
-  const { properties: { Part_Type, Supplier, Aging_Code, Function_Code, Purchase_Order_Type, Flag_MPCD, Flag_Active_Part } } = resp;
-  updateFDFields(Part_Type, Supplier, Aging_Code, Function_Code, Purchase_Order_Type, Flag_MPCD, Flag_Active_Part, array, id);
+  [err, data] = await to(client.request.get(`https://api.eu-de.apiconnect.ibmcloud.com/honda-motor-europe/tst/v100/freshdesk/part/${cf_customer}`, options));
+  console.log(data);
+  if (data) {
+    const { PART_Information: { Part_type, Supplier, Ageing_code, Function_code, P_O_type, MPCD, Active_Not_active } } = JSON.parse(data.response);
+    updateFDFields(Part_type, Supplier, Ageing_code, Function_code, P_O_type, MPCD, Active_Not_active, array, id);
+  } else if (err) {
+    showNotify('danger', 'Failed to fetch NPS2 fields.');
+  }
+
   console.log(err);
 }
 // utility fn to avoid excessive try..catchs
@@ -107,19 +70,27 @@ let updateFDFields = async function (Part_Type, Supplier, Aging_Code, Function_C
   }; let body = {
     "custom_fields":
     {
-      [array.Part_Type[1]]: Part_Type.example,
-      [array.Supplier[1]]: Supplier.example,
-      [array.Aging_Code[1]]: Aging_Code.example,
-      [array.Function_Code[1]]: Function_Code.example,
-      [array.Purchase_Order_Type[1]]: Purchase_Order_Type.example,
-      [array.Flag_MPCD[1]]: Flag_MPCD.example,
-      [array.Flag_Active_Part[1]]: Flag_Active_Part.example,
+      [array.Part_Type[1]]: Part_Type,
+      [array.Supplier[1]]: Supplier,
+      [array.Aging_Code[1]]: Aging_Code,
+      [array.Function_Code[1]]: Function_Code,
+      [array.Purchase_Order_Type[1]]: Purchase_Order_Type,
+      [array.Flag_MPCD[1]]: Flag_MPCD,
+      [array.Flag_Active_Part[1]]: Flag_Active_Part,
     }
   };
   console.log(body);
   var options = { headers: headers, body: JSON.stringify(body) };
   [err, response] = await to(client.request.put(`https://<%= iparam.domain %>/api/v2/tickets/${id}`, options));
   console.log(err, response);
+  if (response) {
+    showNotify('success', 'Ticket fields updated with NPS2 values.');
+  } else if (err) {
+    showNotify('danger', 'Failed to update ticket fields.');
+  }
+}
+let showNotify = function (type, message) {
+  client.interface.trigger("showNotify", { type, message });
 }
 
 

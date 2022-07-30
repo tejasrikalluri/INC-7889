@@ -16,6 +16,9 @@ app.initialized().then(function (client) {
         removeAttrFn("apiKey");
         removeAttrFn("clientId");
         removeAttrFn("clientSecret");
+        buttonEnable('authBtn');
+        buttonEnable('authBtn_NPS2');
+        $('.error_div_nps2,.error_div').html('');
     });
     $('.fd_fields,#type').on('fwChange', function () {
         $("#selectError").html("");
