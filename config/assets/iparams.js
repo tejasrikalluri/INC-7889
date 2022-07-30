@@ -11,11 +11,9 @@ app.initialized().then(function (client) {
         ($("#apiKey").val().trim() !== "" && $("#domain").val().trim() !== "") ? getTicketFileds('fd') : buttonEnable('authBtn');
     });
     $(document).on('click', '#authBtn_NPS2', NSP2BtnClick);
-    $(document).on('fwFocus', '#domain,#apiKey,#username,#password,#clientId,#clientSecret', function () {
+    $(document).on('fwFocus', '#domain,#apiKey,#clientId,#clientSecret', function () {
         removeAttrFn("domain");
         removeAttrFn("apiKey");
-        removeAttrFn("username");
-        removeAttrFn("password");
         removeAttrFn("clientId");
         removeAttrFn("clientSecret");
     });
@@ -28,35 +26,30 @@ let NSP2BtnClick = function () {
     $(this).text("Authenticating...");
     $(this).prop("disabled", true);
     $('.error_div_nps2').html('');
-    (!$("#username").val().trim()) ?
-        showErrorMsg("username", "Please enter username") :
-        removeAttrFn("username");
-    ($("#password").val().trim() === "") ? showErrorMsg("password", "Please enter password") : removeAttrFn("password");
     ($("#clientId").val().trim() === "") ? showErrorMsg("clientId", "Please enter client id") : removeAttrFn("clientId");
     ($("#clientSecret").val().trim() === "") ? showErrorMsg("clientSecret", "Please enter client secret") : removeAttrFn("clientSecret");
-    ($("#username").val().trim() && $("#password").val().trim() && $("#clientId").val().trim() && $("#clientSecret").val().trim()) ? Nps2VadalitionCheck() : buttonEnable('authBtn_NPS2');
+    ($("#clientId").val().trim() && $("#clientSecret").val().trim()) ? Nps2VadalitionCheck() : buttonEnable('authBtn_NPS2');
 }
-let Nps2VadalitionCheck = function () {
-    let username = $("#username").val();
-    let password = $("#password").val();
+let Nps2VadalitionCheck = async function () {
     let clientId = $("#clientId").val();
     let clientSecret = $("#clientSecret").val();
     var headers = {
-        "Authorization": `Basic ${username}:${password}`,
         'X-IBM-Client-Id': clientId,
         'X-IBM-Client-Secret': clientSecret,
-        'accept': 'application/json',
-        'HondaHeaderType.CollectedTimeStamp': '2008-03-27T15:43:23.12Z',
         'HondaHeaderType.SiteId': 'FreshDesk',
         'HondaHeaderType.BusinessId': 'Part',
-        'HondaHeaderType.MessageId': 'Part'
     };
     var options = { headers: headers };
-    [err, response] = await to(client.request.get(`https://api.eu-de.apiconnect.ibmcloud.com/honda-motor-europe/dev/v100/freshdesk/part/${cf_customer}`, options));
-    $("#authBtn_NPS2").text("Authenticated");
-    $(".NPS2_authentication").hide();
-    $(".next_page").show();
-    getTicketFileds('nps2');
+    [err, response] = await to(client.request.get(`https://api.eu-de.apiconnect.ibmcloud.com/honda-motor-europe/tst/v100/freshdesk/part/15400RZ0G01`, options));
+    console.log(err, response)
+    if (response) {
+        $("#authBtn_NPS2").text("Authenticated");
+        $(".NPS2_authentication").hide();
+        $(".next_page").show(); getTicketFileds('nps2');
+    } else if (err) {
+        $('.error_div_nps2').html("Something went wrong please try again later");
+    }
+
 }
 function removeAttrFn(id) {
     $("#" + id).removeAttr("error-text");

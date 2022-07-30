@@ -29,10 +29,6 @@
         </div>
     </div>
     <div class="NPS2_authentication align">
-        <fw-input label="NPS2 Username" id="username" required clear-input>
-        </fw-input>
-        <fw-input label="NPS2 Password" id="password" required clear-input>
-        </fw-input>
         <fw-input label="NPS2 client id" id="clientId" required clear-input>
         </fw-input>
         <fw-input label="NPS2 client secret" id="clientSecret" required clear-input>
@@ -99,8 +95,6 @@
         function postConfigs() {
             var domain = $("#domain").val();
             var api_key = $("#apiKey").val();
-            var username = $("#username").val();
-            var password = $("#password").val();
             var clientId = $("#clientId").val();
             var clientSecret = $("#clientSecret").val();
             var types = $("#type").val();
@@ -108,7 +102,7 @@
                 __meta: {
                     secure: ["api_key"]
                 },
-                domain, api_key: api_key, username, password, array, types, clientSecret, clientId
+                domain, api_key: api_key, array, types, clientSecret, clientId
             };
         }
 
@@ -117,8 +111,6 @@
             updateConfigs = configs;
             $("#domain").val(configs.domain);
             $("#apiKey").val(configs.api_key);
-            $("#username").val(configs.username);
-            $("#password").val(configs.password);
             $("#clientId").val(configs.clientId);
             $("#clientSecret").val(configs.clientSecret);
         }
@@ -131,11 +123,11 @@
                 $(".error_div").html("Please click Authenticate button for further installation");
                 isAllow = false;
             }
-            if ($(".NPS2_authentication").is(":visible") && authBtn_NPS2 !== "Authenticated") {
+            else if ($(".NPS2_authentication").is(":visible") && authBtn_NPS2 !== "Authenticated") {
                 $(".error_div_nps2").html("Please click Authenticate button for further installation");
                 isAllow = false;
             }
-            if ($(".next_page").is(":visible") && types.length) {
+            else if ($(".next_page").is(":visible") && types.length) {
                 let array = [];
                 $.each($('.labelNps2'), function (k, v) {
                     let obj = {}
@@ -145,7 +137,6 @@
                 $.each(array, function (k1, v) {
                     console.log(!Object.keys(v).every((k) => v[k]), Object.keys(v).every((k) => v[k]))
                     if (!Object.keys(v).every((k) => v[k])) {
-                        console.log("*************")
                         $("#selectError").html("Please select all mandatory fields");
                         return isAllow = false;
                     }
