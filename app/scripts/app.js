@@ -11,27 +11,27 @@ async function renderText() {
   const iparamData = await client.iparams.get();
   const ticketData = await client.data.get('ticket');
   const { types, array } = iparamData;
-  const { ticket: { type, custom_fields: { cf_customer } } } = ticketData;
-  let initial = cf_customer;
+  const { ticket: { type, custom_fields: { cf_part_number } } } = ticketData;
+  let initial = cf_part_number;
   let typeMatch = types.indexOf(type);
-  console.log(type, cf_customer, typeMatch)
+  console.log(type, cf_part_number, typeMatch)
   console.log("**************************************")
   console.log(types)
   let eventCallback = async function (event) {
     console.log("Update properies happened")
     const ticketData = await client.data.get('ticket');
-    const { ticket: { custom_fields: { cf_customer } } } = ticketData;
+    const { ticket: { custom_fields: { cf_part_number } } } = ticketData;
     const { ticket: { id } } = ticketData;
-    console.log(cf_customer, initial, typeMatch)
-    if (cf_customer !== initial && cf_customer && typeMatch > -1) {
-      fetchNPS2Fields(cf_customer, array, id);
+    console.log(cf_part_number, initial, typeMatch)
+    if (cf_part_number !== initial && cf_part_number && typeMatch > -1) {
+      fetchNPS2Fields(cf_part_number, array, id);
     }
     event.helper.done();
     event.helper.fail('errorMessage');
   };
   client.events.on("ticket.propertiesUpdated", eventCallback);
 }
-let fetchNPS2Fields = async function (cf_customer, array, id) {
+let fetchNPS2Fields = async function (cf_part_number, array, id) {
   var headers = {
     'X-IBM-Client-Id': '<%= iparam.clientId %>',
     'X-IBM-Client-Secret': '<%= iparam.clientSecret %>',
@@ -39,7 +39,7 @@ let fetchNPS2Fields = async function (cf_customer, array, id) {
     'HondaHeaderType.BusinessId': 'Part',
   };
   var options = { headers: headers };
-  [err, data] = await to(client.request.get(`https://api.eu-de.apiconnect.ibmcloud.com/honda-motor-europe/tst/v100/freshdesk/part/${cf_customer}`, options));
+  [err, data] = await to(client.request.get(`https://api.eu-de.apiconnect.ibmcloud.com/honda-motor-europe/tst/v100/freshdesk/part/${cf_part_number}`, options));
   console.log(data);
   if (data) {
     const { PART_Information: { Part_type, Supplier, Ageing_code, Function_code, P_O_type, MPCD, Active_Not_active } } = JSON.parse(data.response);
